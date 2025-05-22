@@ -19,7 +19,7 @@ if __name__ == "__main__":
     action_size = 4 # up, down, left, right
 
     # Training parameters
-    EPISODES = 5 
+    EPISODES = 1000 
     BATCH_SIZE = 64 
     MAX_STEPS_PER_EPISODE = 200 
 
@@ -34,6 +34,8 @@ if __name__ == "__main__":
     print(f"Environment: {env_size}x{env_size} grid, Goal: {goal_pos}, Obstacles: {num_obstacles}")
     print(f"Agent: Epsilon start={agent.epsilon:.2f}, decay={agent.epsilon_decay:.3f}, min={agent.epsilon_min}")
     print(f"Replay Batch Size: {BATCH_SIZE}, Max Steps/Episode: {MAX_STEPS_PER_EPISODE}")
+
+    episode_rewards_history = []
 
     for e in range(EPISODES):
         current_state_tuple = env.reset()
@@ -68,7 +70,17 @@ if __name__ == "__main__":
             if len(agent.memory) > BATCH_SIZE:
                 agent.replay(BATCH_SIZE)
         
+        episode_rewards_history.append(total_reward_episode)
+
         print(f"Episode: {e+1}/{EPISODES} | Total Reward: {total_reward_episode:.2f} | Steps: {step+1} | Epsilon: {agent.epsilon:.4f}")
+
+        moving_avg_window = 20
+        current_episode_count = len(episode_rewards_history)
+        actual_window_size = min(current_episode_count, moving_avg_window)
+        
+        if actual_window_size > 0:
+            moving_avg_reward = np.mean(episode_rewards_history[-actual_window_size:])
+            print(f"Moving Avg Reward (last {actual_window_size} episodes): {moving_avg_reward:.2f}")
 
         if e % 100 == 0 and e > 0: # This condition won't be met with EPISODES = 5
             try:

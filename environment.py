@@ -57,7 +57,7 @@ class GridWorld:
 
         # Check boundaries
         if row < 0 or row >= self.size or col < 0 or col >= self.size:
-            reward = -50 # Penalty for hitting a wall
+            reward = -50.5 # Penalty for hitting a wall + not moving
             done = True
             next_pos = prev_pos # Agent bounces back
         elif next_pos == self.goal_pos:
@@ -65,7 +65,7 @@ class GridWorld:
             done = True
             self.agent_pos = next_pos
         elif next_pos in self.obstacles:
-            reward = -50 # Penalty for hitting an obstacle
+            reward = -50.5 # Penalty for hitting an obstacle + not moving
             done = True
             next_pos = prev_pos # Agent bounces back (or stays, depending on desired behavior)
         else:
